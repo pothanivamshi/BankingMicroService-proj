@@ -1,4 +1,3 @@
-```markdown
 # DevOps for Banking Microservices
 
 This project demonstrates the implementation of DevOps practices for a banking microservice. It covers Git repository management, build automation with Maven, server provisioning using Ansible, and containerization with Docker.
@@ -19,6 +18,7 @@ Ensure the following are installed:
 
 ## Project Structure
 
+```plaintext
 BankingMicroservice/
 ├── src/
 │   ├── main/
@@ -33,8 +33,8 @@ BankingMicroservice/
 ├── pom.xml
 ├── .gitignore
 ├── README.md
-
 ```
+
 ---
 
 ## Instructions
@@ -159,10 +159,3 @@ docker-compose down
   ```
 
 ---
-
-## Author
-
-This project was implemented as part of the "DevOps for Banking Microservices" capstone project at ABC Software Company.
-```
-
-This is the complete single file for your **README.md**. You can copy and paste it directly!
