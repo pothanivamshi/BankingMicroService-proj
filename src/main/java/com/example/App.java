@@ -15,6 +15,6 @@ public class App {
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello pothani vamshi. Welcome, Banking Microservice!";
+        return "Hello pothani vamshi updated Version. Welcome, Banking Microservice!";
     }
 }
