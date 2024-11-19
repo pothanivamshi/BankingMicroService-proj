@@ -26,4 +26,4 @@ sudo mvn --version && echo "Maven successfully installed." || echo "Maven instal
 # Script completion message
 echo "Custom data script execution completed."
 
-has context menu
+
