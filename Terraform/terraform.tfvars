@@ -4,7 +4,7 @@
 subscription_id = "98fdc993-97aa-4299-96d2-450a8f05e135"
 
 # Resource Group
-resource_group_name = "rg-linux-vm"
+resource_group_name = "rg-linux-vm1"
 
 # Location for resources
 location = "Canada Central"
