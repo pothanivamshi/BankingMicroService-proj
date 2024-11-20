@@ -80,7 +80,7 @@ data "template_file" "user_data_script" {
 
 # Linux Virtual Machine
 resource "azurerm_linux_virtual_machine" "linux_vm" {
-  name                            = "linux-vm-linux"
+  name                            = "linux-vm-linux1"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
   size                            = var.vm_size  # Use variable for VM size
