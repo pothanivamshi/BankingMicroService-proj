@@ -37,8 +37,8 @@ resource "azurerm_public_ip" "public_ip" {
   name                = var.public_ip_name  # Use variable for public IP name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  allocation_method   = "Dynamic"
-  sku                 = "Basic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
   tags = {
     environment = "dev"
   }
