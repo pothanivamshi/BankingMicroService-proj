@@ -1,0 +1,120 @@
+pipeline {
+    agent none 
+    stages {
+        stage("SCM Checkout node1") {
+            agent { label 'java' }
+            steps {
+                git branch: 'main', 
+                    credentialsId: 'githubcred', 
+                    url: 'git@github.com:pothanivamshi/BankingMicroService-proj.git/'
+            }
+        }
+        
+        stage('Install epel-release and Ansible') {
+            agent { label 'java' }
+            steps {
+                script {
+                    sh '''
+                    sudo dnf -y update
+                    sudo dnf -y install epel-release
+                    sudo dnf -y install ansible
+                    ansible --version
+                    '''
+                }
+            }
+        }
+        
+        stage('Capture IP Address and Edit Inventory File') {
+            agent { label 'java' }
+            steps {
+                script {
+                    def ipAddress = sh(script: "ip a show eth0 | grep inet | grep -v inet6 | awk '{print \$2}' | cut -d'/' -f1 | head -n 1", returnStdout: true).trim()
+                    def inventoryFile = '/etc/ansible/hosts'
+                    def existingIpCheck = sh(script: "grep -q '${ipAddress}' ${inventoryFile} && echo 'found' || echo 'not_found'", returnStdout: true).trim()
+
+                    if (existingIpCheck == 'not_found') {
+                        sh """
+                        echo '[Controller]' | sudo tee -a ${inventoryFile}
+                        echo '${ipAddress}' | sudo tee -a ${inventoryFile}
+                        """
+                        sh 'cat /etc/ansible/hosts'
+                    } else {
+                        echo "IP address ${ipAddress} already exists in the inventory. Skipping update."
+                    }
+                }
+            }
+        }
+        
+        stage('Install Terraform using Ansible Playbook') {
+            agent { label 'java' }
+            steps {
+                script {
+                    sh 'ansible-playbook ./ansibleplaybooks/terraform.yml'
+                }
+            }
+        }
+        
+        stage('Terraform Init and Plan') {
+            agent { label 'java' }
+            steps {
+                script {
+                    dir('Terraform') {
+                        sh 'terraform init'
+                        sh 'terraform plan'
+                        sh 'terraform apply -auto-approve'
+                    }
+                }
+            }
+        }
+
+        stage("SCM Checkout") {
+            agent { label 'java1' }
+            steps {
+                git branch: 'main',
+                    credentialsId: 'githubcred90',
+                    url: 'git@github.com:pothanivamshi/BankingMicroService-proj.git/'
+            }
+        }
+        
+        stage("Run Ansible Playbook") {
+            agent { label 'java1' }
+            steps {
+                script {
+                    // Ensure the playbook is run from the correct path
+                    sh 'ansible-playbook ./ansibleplaybooks/pipeline.yml'
+                }
+            }
+        }
+
+        stage("Maven Build") {
+            agent { label 'java1' }
+            steps {
+                script {
+                    // Running Maven build
+                    sh 'mvn clean install'
+                }
+            }
+        }
+        
+        stage("Docker Compose Up") {
+            agent { label 'java1' }
+            steps {
+                script {
+                    // Run docker-compose to start containers in detached mode
+                    sh 'sudo docker compose -f docker-compose.yaml up -d'
+                }
+            }
+        }
+          stage('Approval') {
+              agent { label 'java' }
+            steps {
+                script {
+                    // Wait for manual approval
+                    sh 'curl 52.156.22.32:8000/hello'
+                    input message: 'Do you approve this build?', 
+                          ok: 'Approve'
+                }
+            }
+        }
+    }
+}
