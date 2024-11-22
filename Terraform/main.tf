@@ -2,6 +2,14 @@ provider "azurerm" {
   features {}
   subscription_id = var.subscription_id
 }
+terraform {
+  backend "azurerm" {
+    resource_group_name   = "new_rg"
+    storage_account_name  = "storagepipeline12"
+    container_name        = "container1"
+    key                   = "terraform.tfstate"  # You can customize the state file name
+  }
+}
 
 # Resource Group
 resource "azurerm_resource_group" "rg2" {
