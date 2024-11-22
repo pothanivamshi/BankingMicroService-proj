@@ -1,0 +1,40 @@
+pipeline {
+    agent { label 'java' }
+ 
+    stages {
+        stage("SCM Checkout") {
+            steps {
+                git branch: 'main', 
+                    credentialsId: 'new', 
+                    url: 'git@github.com:pothanivamshi/BankingMicroService-proj.git/'
+            }
+        }
+ 
+        stage("Run Ansible Playbook") {
+            steps {
+                script {
+                    // Ensure the playbook is run from the correct path
+                    sh 'ansible-playbook ./ansibleplaybooks/maven.yml'
+                }
+            }
+        }
+ 
+        stage("Maven Build") {
+            steps {
+                script {
+                    // Running Maven build
+                    sh 'mvn clean install'
+                }
+            }
+        }
+ 
+        stage("Docker Compose Up") {
+            steps {
+                script {
+                    // Run docker-compose to start containers in detached mode
+                    sh 'docker compose -f docker-compose.yaml up -d'
+                }
+            }
+        }
+    }
+}
